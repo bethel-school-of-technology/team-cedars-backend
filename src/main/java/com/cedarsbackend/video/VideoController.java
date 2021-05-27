@@ -6,29 +6,39 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/api")
+@RequestMapping("/api/video")
 public class VideoController {
 	
 	@Autowired
 	private VideoRepository dao; 
 	
-	@GetMapping("/video")
+	@GetMapping()
 	public List<Video> getVideos() {
 		List<Video> foundVideos = dao.findAll(); 
 		return foundVideos; 
 	}
 	
-	@PostMapping("/video")
+	@PostMapping()
 	public ResponseEntity<Video> postVideo(@RequestBody Video video) {
 		Video createdVideo = dao.save(video); 
 		
 		return ResponseEntity.ok(createdVideo); 
 	}
 	
-//	@PutMapping("/video/{id}")
-//	public 
+	@PutMapping("/{id}")
+	public ResponseEntity<Video> updateVideo(@PathVariable(value="id") Long id , @RequestBody Video video) {
+		Video foundVideo = dao.findById(id).orElse(null); 
+		
+		if(foundVideo == null) {
+			return ResponseEntity.notFound().header("Video", "Nothing found with that ID").build(); 
+		}
+		else {
+			foundVideo = dao.save(video); 
+		}
+		return ResponseEntity.ok(foundVideo); 
+	}
 	
-	@DeleteMapping("/video/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Video> deleteVideo(@PathVariable(value="id") Long id) {
 		Video foundVideo = dao.findById(id).orElse(null); 
 		
